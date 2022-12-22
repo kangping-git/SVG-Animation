@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page - SVG Animation</title>
+    <style>
+        html,body{
+            margin: 0;
+            padding: 0;
+            overflow-y: hidden;
+            display: inline-block;
+        }
+        polygon{
+            height: 0px;
+            transition: height 0.5s;
+        }
+        .hover{
+            height: 100px;
+        }
+        .card{
+            width: 200px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="card" data-href="/" data-color="#ff77ff" data-img="/img1.jpg">MainPage</div>
+    <div class="card" data-href="/text.html" data-color="#4f5bff" data-img="/img2.jpg">Text Animation</div>
+    <script>
+        window.onload = () => {
+            const height = window.innerHeight
+            const svgConstructor = `<svg width="200" height="${height}" viewBox="0 0 200 ${height}" id="SVG_ID" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="font-family: 'Times New Roman', Times, serif;">SVG_CODE</svg>`
+            function CreateSVG(Code,ID="id"){
+                return svgConstructor.replace(/SVG_CODE/g,Code).replace(/SVG_ID/g,ID)
+            }
+            document.querySelectorAll(".card").forEach((value,index) => {
+                value.style.backgroundImage = "url(" + value.dataset.img + ")"
+                value.style.backgroundSize = "cover"
+                value.style.backgroundPosition = "50% 50%"
+                value.innerHTML = CreateSVG(`<path d="M 0 0 L 200 0 L 200 100 L 0 100" fill="${value.dataset.color}"/><polygon points="0,100 200,100 0,175" fill="${value.dataset.color}"/><text font-size="30" fill="white" x="100" y="30" text-anchor="middle">` + value.innerText + `</text>`,"id-" + index)
+                document.getElementById("id-"+index).addEventListener("mouseenter",() => {
+                    document.querySelector("#id-"+index + " > polygon").classList.add("hover")
+                })
+                document.getElementById("id-"+index).addEventListener("mouseleave",() => {
+                    document.querySelector("#id-"+index + " > polygon").classList.remove("hover")
+                })
+                document.getElementById("id-"+index).addEventListener("click",() => {
+                    location.href = value.dataset.href
+                })
+            })
+            setInterval(() => {
+                document.querySelectorAll(".card").forEach((value,index) => {
+                    const height = Number(document.querySelector("#id-"+index + " > polygon").getAttribute("points").split(" ")[2].split(",")[1])
+                    if (document.querySelector("#id-"+index + " > polygon").classList.contains("hover")){
+                        if (height > 100){
+                            document.querySelector("#id-"+index + " > polygon").setAttribute("points","0,100 200,100 0," +  (height - (height-90) / 30))
+                        }
+                    }else{
+                        if (height < 175){
+                            document.querySelector("#id-"+index + " > polygon").setAttribute("points","0,100 200,100 0," +  (height + (height-90) / 30))
+                        }
+                    }
+                })
+            })
+        }
+    </script>
+</body>
+</html>
